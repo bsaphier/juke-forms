@@ -9,7 +9,6 @@ export default class FilterableArtistsContainer extends Component {
     this.state = {
       inputValue: ''
     };
-
     this.handleChange = this.handleChange.bind(this);
   }
 
@@ -31,3 +30,7 @@ export default class FilterableArtistsContainer extends Component {
     );
   }
 }
+
+FilterableArtistsContainer.propTypes = {
+  artists: React.PropTypes.array
+};

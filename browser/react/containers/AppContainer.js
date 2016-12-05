@@ -24,6 +24,7 @@ export default class AppContainer extends Component {
     this.selectAlbum = this.selectAlbum.bind(this);
     this.selectArtist = this.selectArtist.bind(this);
     this.addPlaylist = this.addPlaylist.bind(this);
+    this.selectPlaylist = this.selectPlaylist.bind(this);
   }
 
   componentDidMount () {
@@ -77,9 +78,11 @@ export default class AppContainer extends Component {
   }
 
   toggleOne (selectedSong, selectedSongList) {
-    if (selectedSong.id !== this.state.currentSong.id)
+    if (selectedSong.id !== this.state.currentSong.id) {
       this.startSong(selectedSong, selectedSongList);
-    else this.toggle();
+    } else {
+      this.toggle();
+    }
   }
 
   toggle () {
@@ -135,6 +138,16 @@ export default class AppContainer extends Component {
       });
   }
 
+  selectPlaylist (playlistId) {
+    axios.get(`/api/playlists/${playlistId}`)
+      .then(res => res.data)
+      .then(playlist => {
+        playlist.songs = playlist.songs.map(convertSong);
+        this.setState({
+          selectedPlaylist: playlist
+        });
+      });
+  }
 
   render () {
 
@@ -142,7 +155,9 @@ export default class AppContainer extends Component {
       toggleOne: this.toggleOne,
       toggle: this.toggle,
       selectAlbum: this.selectAlbum,
-      selectArtist: this.selectArtist
+      selectArtist: this.selectArtist,
+      selectPlaylist: this.selectPlaylist,
+      addPlaylist: this.addPlaylist
     });
 
     return (

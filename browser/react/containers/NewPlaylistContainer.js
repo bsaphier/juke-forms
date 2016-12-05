@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 
 import NewPlaylist from '../components/NewPlaylist';
 
@@ -35,8 +34,7 @@ export default class Playlist extends Component {
 
   handleSubmit (event) {
     event.preventDefault();
-    const addPlaylist = this.props.addPlaylist;
-    addPlaylist(this.state.inputValue);
+    this.props.addPlaylist(this.state.inputValue);
     this.setState({ inputValue: '' });
   }
 
@@ -54,3 +52,7 @@ export default class Playlist extends Component {
   }
 
 }
+
+Playlist.propTypes = {
+  addPlaylist: React.PropTypes.func
+};
