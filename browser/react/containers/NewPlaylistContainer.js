@@ -1,33 +1,58 @@
 import React, { Component } from 'react';
+import axios from 'axios';
+
 import NewPlaylist from '../components/NewPlaylist';
 
 export default class Playlist extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      inputValue: ''
+      inputValue: '',
+      buttonState: true,
+      hidden: true,
+      alertMessage: ''
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
 
   handleChange (event) {
-    this.setState({ inputValue: event.target.value });
+    let value = event.target.value;
+    this.setState({ inputValue: value });
+    if (value.length === 0 || value.length > 16) {
+      this.setState({
+        buttonState: true,
+        hidden: false,
+        alertMessage: (value.length === 0) ? 'Please enter a name' : 'Please pick a name shorter than 16 chars'
+      });
+    } else {
+      this.setState({
+        buttonState: false,
+        hidden: true
+      });
+    }
   }
 
   handleSubmit (event) {
     event.preventDefault();
-    console.log(this.state.inputValue);
+    axios.post('/api/playlists', { name: this.state.inputValue })
+      .then(res => res.data)
+      .then(result => {
+          console.log(result); // response json from the server!
+      });
     this.setState({ inputValue: '' });
-  }
-
-  handleButton () {
-    return (this.state.inputValue.length === 0 || this.state.inputValue.length > 16);
   }
 
   render() {
     return (
-      <NewPlaylist handleSubmit={this.handleSubmit} handleChange={this.handleChange} inputValue={this.state.inputValue} handleButton={this.handleButton}/>
+      <NewPlaylist
+        handleSubmit={this.handleSubmit}
+        handleChange={this.handleChange}
+        inputValue={this.state.inputValue}
+        buttonState={this.state.buttonState}
+        hidden={this.state.hidden}
+        message={this.state.alertMessage}
+      />
     );
   }
 

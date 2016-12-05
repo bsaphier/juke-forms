@@ -28487,6 +28487,28 @@
 	        'PLAYLISTS'
 	      ),
 	      _react2.default.createElement(
+	        'ul',
+	        { className: 'list-unstyled' },
+	        _react2.default.createElement(
+	          'li',
+	          { className: 'playlist-item menu-item' },
+	          _react2.default.createElement(
+	            _reactRouter.Link,
+	            { to: 'FILL_ME_IN' },
+	            'some playlist'
+	          )
+	        ),
+	        _react2.default.createElement(
+	          'li',
+	          { className: 'playlist-item menu-item' },
+	          _react2.default.createElement(
+	            _reactRouter.Link,
+	            { to: 'WHERE_TO_GO' },
+	            'another playlist'
+	          )
+	        )
+	      ),
+	      _react2.default.createElement(
 	        'h4',
 	        null,
 	        _react2.default.createElement(
@@ -28495,7 +28517,8 @@
 	          _react2.default.createElement('span', { className: 'glyphicon glyphicon-plus' }),
 	          ' PLAYLIST'
 	        )
-	      )
+	      ),
+	      _react2.default.createElement('hr', null)
 	    )
 	  );
 	};
@@ -28789,6 +28812,10 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
+	var _axios = __webpack_require__(234);
+	
+	var _axios2 = _interopRequireDefault(_axios);
+	
 	var _NewPlaylist = __webpack_require__(271);
 	
 	var _NewPlaylist2 = _interopRequireDefault(_NewPlaylist);
@@ -28810,7 +28837,10 @@
 	    var _this = _possibleConstructorReturn(this, (Playlist.__proto__ || Object.getPrototypeOf(Playlist)).call(this, props));
 	
 	    _this.state = {
-	      inputValue: ''
+	      inputValue: '',
+	      buttonState: true,
+	      hidden: true,
+	      alertMessage: ''
 	    };
 	    _this.handleSubmit = _this.handleSubmit.bind(_this);
 	    _this.handleChange = _this.handleChange.bind(_this);
@@ -28820,24 +28850,43 @@
 	  _createClass(Playlist, [{
 	    key: 'handleChange',
 	    value: function handleChange(event) {
-	      this.setState({ inputValue: event.target.value });
+	      var value = event.target.value;
+	      this.setState({ inputValue: value });
+	      if (value.length === 0 || value.length > 16) {
+	        this.setState({
+	          buttonState: true,
+	          hidden: false,
+	          alertMessage: value.length === 0 ? 'Please enter a name' : 'Please pick a name shorter than 16 chars'
+	        });
+	      } else {
+	        this.setState({
+	          buttonState: false,
+	          hidden: true
+	        });
+	      }
 	    }
 	  }, {
 	    key: 'handleSubmit',
 	    value: function handleSubmit(event) {
 	      event.preventDefault();
-	      console.log(this.state.inputValue);
+	      _axios2.default.post('/api/playlists', { name: this.state.inputValue }).then(function (res) {
+	        return res.data;
+	      }).then(function (result) {
+	        console.log(result); // response json from the server!
+	      });
 	      this.setState({ inputValue: '' });
-	    }
-	  }, {
-	    key: 'handleButton',
-	    value: function handleButton() {
-	      return this.state.inputValue.length === 0 || this.state.inputValue.length > 16;
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      return _react2.default.createElement(_NewPlaylist2.default, { handleSubmit: this.handleSubmit, handleChange: this.handleChange, inputValue: this.state.inputValue, handleButton: this.handleButton });
+	      return _react2.default.createElement(_NewPlaylist2.default, {
+	        handleSubmit: this.handleSubmit,
+	        handleChange: this.handleChange,
+	        inputValue: this.state.inputValue,
+	        buttonState: this.state.buttonState,
+	        hidden: this.state.hidden,
+	        message: this.state.alertMessage
+	      });
 	    }
 	  }]);
 	
@@ -28879,6 +28928,11 @@
 	        ),
 	        _react2.default.createElement(
 	          "div",
+	          { className: "alert alert-warning", hidden: props.hidden },
+	          props.message
+	        ),
+	        _react2.default.createElement(
+	          "div",
 	          { className: "form-group" },
 	          _react2.default.createElement(
 	            "label",
@@ -28899,7 +28953,7 @@
 	            { className: "col-xs-10 col-xs-offset-2" },
 	            _react2.default.createElement(
 	              "button",
-	              { type: "submit", className: "btn btn-success", disabled: props.handleButton },
+	              { type: "submit", className: "btn btn-success", disabled: props.buttonState },
 	              "Create Playlist"
 	            )
 	          )
@@ -28909,10 +28963,14 @@
 	  );
 	};
 	
-	// NewPlaylist.propTypes = {
-	//   handleSubmit: React.PropTypes.func,
-	//   inputValue: React.PropTypes.string.isRequired
-	// }
+	NewPlaylist.propTypes = {
+	  handleSubmit: _react2.default.PropTypes.func,
+	  handleChange: _react2.default.PropTypes.func,
+	  buttonState: _react2.default.PropTypes.bool,
+	  hidden: _react2.default.PropTypes.bool,
+	  message: _react2.default.PropTypes.string,
+	  inputValue: _react2.default.PropTypes.string.isRequired
+	};
 	
 	exports.default = NewPlaylist;
 
