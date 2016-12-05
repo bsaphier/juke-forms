@@ -26494,6 +26494,7 @@
 	    _this.prev = _this.prev.bind(_this);
 	    _this.selectAlbum = _this.selectAlbum.bind(_this);
 	    _this.selectArtist = _this.selectArtist.bind(_this);
+	    _this.addPlaylist = _this.addPlaylist.bind(_this);
 	    return _this;
 	  }
 	
@@ -26502,7 +26503,7 @@
 	    value: function componentDidMount() {
 	      var _this2 = this;
 	
-	      Promise.all([_axios2.default.get('/api/albums/'), _axios2.default.get('/api/artists/')]).then(function (res) {
+	      Promise.all([_axios2.default.get('/api/albums/'), _axios2.default.get('/api/artists/'), _axios2.default.get('/api/playlists')]).then(function (res) {
 	        return res.map(function (r) {
 	          return r.data;
 	        });
@@ -26519,10 +26520,11 @@
 	    }
 	  }, {
 	    key: 'onLoad',
-	    value: function onLoad(albums, artists) {
+	    value: function onLoad(albums, artists, playlists) {
 	      this.setState({
 	        albums: (0, _utils.convertAlbums)(albums),
-	        artists: artists
+	        artists: artists,
+	        playlists: playlists
 	      });
 	    }
 	  }, {
@@ -26616,6 +26618,17 @@
 	      this.setState({ selectedArtist: artist });
 	    }
 	  }, {
+	    key: 'addPlaylist',
+	    value: function addPlaylist(name) {
+	      var _this5 = this;
+	
+	      _axios2.default.post('/api/playlists', { name: name }).then(function (res) {
+	        return res.data;
+	      }).then(function (playlist) {
+	        _this5.setState({ playlists: [].concat(_toConsumableArray(_this5.state.playlists), [playlist]) });
+	      });
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	
@@ -26632,7 +26645,7 @@
 	        _react2.default.createElement(
 	          'div',
 	          { className: 'col-xs-2' },
-	          _react2.default.createElement(_Sidebar2.default, null)
+	          _react2.default.createElement(_Sidebar2.default, { playlists: this.state.playlists })
 	        ),
 	        _react2.default.createElement(
 	          'div',
@@ -28163,7 +28176,8 @@
 	  currentSong: {},
 	  currentSongList: [],
 	  isPlaying: false,
-	  progress: 0
+	  progress: 0,
+	  playlists: []
 	};
 	
 	exports.default = initialState;
@@ -28447,6 +28461,18 @@
 	
 	var Sidebar = function Sidebar(props) {
 	
+	  var playlists = props.playlists.map(function (playlist) {
+	    return _react2.default.createElement(
+	      'li',
+	      { className: 'playlist-item menu-item', key: playlist.id },
+	      _react2.default.createElement(
+	        _reactRouter.Link,
+	        { to: 'FILL_ME_IN' },
+	        playlist.name
+	      )
+	    );
+	  });
+	
 	  return _react2.default.createElement(
 	    'sidebar',
 	    null,
@@ -28489,24 +28515,7 @@
 	      _react2.default.createElement(
 	        'ul',
 	        { className: 'list-unstyled' },
-	        _react2.default.createElement(
-	          'li',
-	          { className: 'playlist-item menu-item' },
-	          _react2.default.createElement(
-	            _reactRouter.Link,
-	            { to: 'FILL_ME_IN' },
-	            'some playlist'
-	          )
-	        ),
-	        _react2.default.createElement(
-	          'li',
-	          { className: 'playlist-item menu-item' },
-	          _react2.default.createElement(
-	            _reactRouter.Link,
-	            { to: 'WHERE_TO_GO' },
-	            'another playlist'
-	          )
-	        )
+	        playlists
 	      ),
 	      _react2.default.createElement(
 	        'h4',
@@ -28869,11 +28878,8 @@
 	    key: 'handleSubmit',
 	    value: function handleSubmit(event) {
 	      event.preventDefault();
-	      _axios2.default.post('/api/playlists', { name: this.state.inputValue }).then(function (res) {
-	        return res.data;
-	      }).then(function (result) {
-	        console.log(result); // response json from the server!
-	      });
+	      var addPlaylist = this.props.addPlaylist;
+	      addPlaylist(this.state.inputValue);
 	      this.setState({ inputValue: '' });
 	    }
 	  }, {
