@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import Songs from './Songs';
+import AddSongContainer from '../containers/AddSongContainer';
 
 export default class SinglePlaylist extends Component {
   componentDidMount () {
@@ -18,9 +19,9 @@ export default class SinglePlaylist extends Component {
 
   render () {
     const playlist = this.props.selectedPlaylist;
-    console.log(playlist.name);
     return (
       <div>
+        <AddSongContainer {...this.props} />
         <h3>{ playlist.name }</h3>
         <Songs songs={playlist.songs} /> {/** Hooray for reusability! */}
         { playlist.songs && !playlist.songs.length && <small>No songs.</small> }

@@ -26505,7 +26505,7 @@
 	    value: function componentDidMount() {
 	      var _this2 = this;
 	
-	      Promise.all([_axios2.default.get('/api/albums/'), _axios2.default.get('/api/artists/'), _axios2.default.get('/api/playlists')]).then(function (res) {
+	      Promise.all([_axios2.default.get('/api/albums/'), _axios2.default.get('/api/artists/'), _axios2.default.get('/api/playlists'), _axios2.default.get('/api/songs')]).then(function (res) {
 	        return res.map(function (r) {
 	          return r.data;
 	        });
@@ -26522,11 +26522,12 @@
 	    }
 	  }, {
 	    key: 'onLoad',
-	    value: function onLoad(albums, artists, playlists) {
+	    value: function onLoad(albums, artists, playlists, songs) {
 	      this.setState({
 	        albums: (0, _utils.convertAlbums)(albums),
 	        artists: artists,
-	        playlists: playlists
+	        playlists: playlists,
+	        songs: songs
 	      });
 	    }
 	  }, {
@@ -26628,10 +26629,11 @@
 	    value: function addPlaylist(name) {
 	      var _this5 = this;
 	
-	      _axios2.default.post('/api/playlists', { name: name }).then(function (res) {
+	      return _axios2.default.post('/api/playlists', { name: name }).then(function (res) {
 	        return res.data;
 	      }).then(function (playlist) {
 	        _this5.setState({ playlists: [].concat(_toConsumableArray(_this5.state.playlists), [playlist]) });
+	        return playlist;
 	      });
 	    }
 	  }, {
@@ -28193,6 +28195,7 @@
 	var initialState = {
 	  albums: [],
 	  artists: [],
+	  songs: [],
 	  selectedAlbum: {},
 	  selectedArtist: {},
 	  selectedPlaylist: {},
@@ -28850,6 +28853,8 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
+	var _reactRouter = __webpack_require__(178);
+	
 	var _NewPlaylist = __webpack_require__(271);
 	
 	var _NewPlaylist2 = _interopRequireDefault(_NewPlaylist);
@@ -28903,8 +28908,10 @@
 	    key: 'handleSubmit',
 	    value: function handleSubmit(event) {
 	      event.preventDefault();
-	      this.props.addPlaylist(this.state.inputValue);
-	      this.setState({ inputValue: '' });
+	      this.props.addPlaylist(this.state.inputValue).then(function (playlist) {
+	        return _reactRouter.hashHistory.push('/playlists/' + playlist.id);
+	      });
+	      // this.setState({ inputValue: '' });
 	    }
 	  }, {
 	    key: 'render',
@@ -29124,6 +29131,10 @@
 	
 	var _Songs2 = _interopRequireDefault(_Songs);
 	
+	var _AddSongContainer = __webpack_require__(275);
+	
+	var _AddSongContainer2 = _interopRequireDefault(_AddSongContainer);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -29160,10 +29171,10 @@
 	    key: 'render',
 	    value: function render() {
 	      var playlist = this.props.selectedPlaylist;
-	      console.log(playlist.name);
 	      return _react2.default.createElement(
 	        'div',
 	        null,
+	        _react2.default.createElement(_AddSongContainer2.default, this.props),
 	        _react2.default.createElement(
 	          'h3',
 	          null,
@@ -29193,6 +29204,55 @@
 	  selectedPlaylist: _react2.default.PropTypes.object,
 	  routeParams: _react2.default.PropTypes.object
 	};
+
+/***/ },
+/* 274 */,
+/* 275 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _react = __webpack_require__(1);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var AddSongContainer = function (_Component) {
+	  _inherits(AddSongContainer, _Component);
+	
+	  function AddSongContainer(props) {
+	    _classCallCheck(this, AddSongContainer);
+	
+	    var _this = _possibleConstructorReturn(this, (AddSongContainer.__proto__ || Object.getPrototypeOf(AddSongContainer)).call(this, props));
+	
+	    _this.state = { selectedSong: 1 };
+	    return _this;
+	  }
+	
+	  _createClass(AddSongContainer, [{
+	    key: 'render',
+	    value: function render() {
+	      return _react2.default.createElement('div', null);
+	    }
+	  }]);
+	
+	  return AddSongContainer;
+	}(_react.Component);
+	
+	exports.default = AddSongContainer;
 
 /***/ }
 /******/ ]);

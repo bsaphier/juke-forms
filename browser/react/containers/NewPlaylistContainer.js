@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { hashHistory } from 'react-router';
 
 import NewPlaylist from '../components/NewPlaylist';
 
@@ -34,8 +35,9 @@ export default class Playlist extends Component {
 
   handleSubmit (event) {
     event.preventDefault();
-    this.props.addPlaylist(this.state.inputValue);
-    this.setState({ inputValue: '' });
+    this.props.addPlaylist(this.state.inputValue)
+              .then(playlist => hashHistory.push(`/playlists/${playlist.id}`));
+    // this.setState({ inputValue: '' });
   }
 
   render() {
