@@ -21,6 +21,10 @@ const Artists = (props) => {
       </div>
     </div>
   );
-}
+};
+
+Artists.propTypes = {
+  artists: React.PropTypes.array
+};
 
 export default Artists;
